@@ -3,3 +3,9 @@
 
 # fix issue: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools
 setuptools == 58.2.0
+tensorflow==2.10.0
+pillow==9.4.0
+numpy==1.24.2
+requests_futures
+boto3
+botocore

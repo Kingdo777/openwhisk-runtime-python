@@ -84,7 +84,7 @@ def build(src_dir, tgt_dir):
 export PYTHONIOENCODING=UTF-8
 if [[ "$__OW_EXECUTION_ENV" == "" || "$(cat $0.env)" == "$__OW_EXECUTION_ENV" ]]
 then cd "$(dirname $0)"
-     exec /usr/local/bin/python exec__.py "$@"
+     exec /usr/bin/python3 exec__.py "$@"
 else echo "Execution Environment Mismatch"
      echo "Expected: $(cat $0.env)"
      echo "Actual: $__OW_EXECUTION_ENV"

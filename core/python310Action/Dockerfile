@@ -27,26 +27,33 @@ RUN git clone --branch ${GO_PROXY_GITHUB_BRANCH} \
 # or build it from a release
 FROM golang:1.18 AS builder_release
 ARG GO_PROXY_RELEASE_VERSION=1.18@1.20.0
-RUN curl -sL \
-  https://github.com/apache/openwhisk-runtime-go/archive/{$GO_PROXY_RELEASE_VERSION}.tar.gz\
-  | tar xzf -\
-  && cd openwhisk-runtime-go-*/main\
-  && GO111MODULE=on CGO_ENABLED=0 go build -o /bin/proxy
+RUN export https_proxy=http://222.20.68.145:7890  \
+    && curl -sL https://github.com/apache/openwhisk-runtime-go/archive/{$GO_PROXY_RELEASE_VERSION}.tar.gz | tar xzf -\
+    && cd openwhisk-runtime-go-*/main\
+    && GO111MODULE=on CGO_ENABLED=0 go build -o /bin/proxy \
+    && unset https_proxy
 
-FROM python:3.10-buster
+FROM ubuntu:22.04
 
 # select the builder to use
 ARG GO_PROXY_BUILD_FROM=release
 
-# install zip
-RUN apt-get update && apt-get install -y zip \
+# install zip && python3.10
+RUN apt-get update && apt-get install -y python3.10 python3.10-dev python3-pip zip libcurl4-openssl-dev\
     && rm -rf /var/lib/apt/lists/*
 
 # Install common modules for python
 COPY requirements_common.txt requirements_common.txt
 COPY requirements.txt requirements.txt
-RUN pip3 install --upgrade pip six wheel &&\
-    pip3 install --no-cache-dir -r requirements.txt
+RUN export https_proxy=http://222.20.68.145:7890 \
+    && pip3 install --upgrade pip six wheel  \
+    && pip3 install --no-cache-dir -r requirements.txt\
+    && unset https_proxy
+
+COPY ./ipc-1.0.0-cp310-cp310-linux_x86_64.whl /ipc-1.0.0-cp310-cp310-linux_x86_64.whl
+COPY ./datafunction-3.0.0-cp310-cp310-linux_x86_64.whl /datafunction-3.0.0-cp310-cp310-linux_x86_64.whl
+
+RUN pip3 install /ipc-1.0.0-cp310-cp310-linux_x86_64.whl /datafunction-3.0.0-cp310-cp310-linux_x86_64.whl
 
 RUN mkdir -p /action
 WORKDIR /

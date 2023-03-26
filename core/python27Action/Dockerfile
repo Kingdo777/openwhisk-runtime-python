@@ -33,16 +33,23 @@ RUN export https_proxy=http://222.20.68.145:7890  \
     && GO111MODULE=on CGO_ENABLED=0 go build -o /bin/proxy \
     && unset https_proxy
 
-FROM python:2.7-buster
+FROM ubuntu:22.04
 
 # select the builder to use
 ARG GO_PROXY_BUILD_FROM=release
 
+# install zip && python2.7
+RUN apt-get update && apt-get install -y python2.7 python2.7-dev python-pip zip libjpeg8-dev zlib1g-dev libcurl4-openssl-dev\
+    && rm -rf /var/lib/apt/lists/*
+
 # Install common modules for python
 COPY requirements_common.txt requirements_common.txt
 COPY requirements.txt requirements.txt
-RUN pip install --upgrade pip six wheel &&\
-    pip install --no-cache-dir -r requirements.txt
+RUN pip2 install --upgrade pip six wheel &&\
+    pip2 install --no-cache-dir -r requirements.txt
+
+COPY ./datafunction-2.0.0-cp27-cp27mu-linux_x86_64.whl /datafunction-2.0.0-cp27-cp27mu-linux_x86_64.whl
+RUN pip2 install /datafunction-2.0.0-cp27-cp27mu-linux_x86_64.whl
 
 RUN mkdir -p /action
 WORKDIR /
