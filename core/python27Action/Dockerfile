@@ -27,7 +27,7 @@ RUN git clone --branch ${GO_PROXY_GITHUB_BRANCH} \
 # or build it from a release
 FROM golang:1.18 AS builder_release
 ARG GO_PROXY_RELEASE_VERSION=1.18@1.20.0
-RUN export https_proxy=http://222.20.68.145:7890  \
+RUN export https_proxy=http://222.20.68.152:7890  \
     && curl -sL https://github.com/apache/openwhisk-runtime-go/archive/{$GO_PROXY_RELEASE_VERSION}.tar.gz | tar xzf -\
     && cd openwhisk-runtime-go-*/main\
     && GO111MODULE=on CGO_ENABLED=0 go build -o /bin/proxy \
@@ -48,8 +48,8 @@ COPY requirements.txt requirements.txt
 RUN pip2 install --upgrade pip six wheel &&\
     pip2 install --no-cache-dir -r requirements.txt
 
-COPY ./datafunction-2.0.0-cp27-cp27mu-linux_x86_64.whl /datafunction-2.0.0-cp27-cp27mu-linux_x86_64.whl
-RUN pip2 install /datafunction-2.0.0-cp27-cp27mu-linux_x86_64.whl
+COPY ./statefunction-2.0.0-cp27-cp27mu-linux_x86_64.whl /statefunction-2.0.0-cp27-cp27mu-linux_x86_64.whl
+RUN pip2 install /statefunction-2.0.0-cp27-cp27mu-linux_x86_64.whl
 
 RUN mkdir -p /action
 WORKDIR /
