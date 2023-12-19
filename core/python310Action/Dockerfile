@@ -54,6 +54,8 @@ COPY ./ipc-1.0.0-cp310-cp310-linux_x86_64.whl /ipc-1.0.0-cp310-cp310-linux_x86_6
 COPY ./datafunction-3.0.0-cp310-cp310-linux_x86_64.whl /datafunction-3.0.0-cp310-cp310-linux_x86_64.whl
 
 RUN pip3 install /ipc-1.0.0-cp310-cp310-linux_x86_64.whl /datafunction-3.0.0-cp310-cp310-linux_x86_64.whl
+RUN pip3 install redis nltk yfinance==0.1.54
+RUN pip3 install scikit-learn
 
 RUN mkdir -p /action
 WORKDIR /
