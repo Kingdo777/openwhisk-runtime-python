@@ -42,20 +42,26 @@ ARG GO_PROXY_BUILD_FROM=release
 RUN apt-get update && apt-get install -y python3.10 python3.10-dev python3-pip zip libcurl4-openssl-dev\
     && rm -rf /var/lib/apt/lists/*
 
+RUN export https_proxy=http://222.20.68.152:7890 \
+    && pip3 install --upgrade pip  \
+    && pip3 install six wheel beautifulsoup4==4.10.0 httplib2==0.19.1 kafka_python==2.0.2 lxml==4.6.3 \
+    && pip3 install python-dateutil==2.8.2 requests==2.26.0 scrapy==2.5.0 simplejson==3.17.5 \
+    && pip3 install virtualenv==20.8.0 twisted==21.7.0 netifaces==0.11.0 \
+    && pip3 install redis nltk yfinance==0.1.54 \
+    && pip3 install scikit-learn \
+    && pip3 install setuptools==58.2.0 tensorflow==2.10.0 pillow==9.4.0 numpy==1.24.2 requests_futures boto3 botocore\
+    && unset https_proxy
+
 # Install common modules for python
 COPY requirements_common.txt requirements_common.txt
 COPY requirements.txt requirements.txt
 RUN export https_proxy=http://222.20.68.152:7890 \
-    && pip3 install --upgrade pip six wheel  \
     && pip3 install --no-cache-dir -r requirements.txt\
     && unset https_proxy
 
 COPY ./ipc-1.0.0-cp310-cp310-linux_x86_64.whl /ipc-1.0.0-cp310-cp310-linux_x86_64.whl
 COPY ./statefunction-3.0.0-cp310-cp310-linux_x86_64.whl /statefunction-3.0.0-cp310-cp310-linux_x86_64.whl
-
 RUN pip3 install /ipc-1.0.0-cp310-cp310-linux_x86_64.whl /statefunction-3.0.0-cp310-cp310-linux_x86_64.whl
-RUN pip3 install redis nltk yfinance==0.1.54
-RUN pip3 install scikit-learn
 
 RUN mkdir -p /action
 WORKDIR /
